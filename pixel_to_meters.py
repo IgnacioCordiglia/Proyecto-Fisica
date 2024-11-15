@@ -5,11 +5,11 @@ import cv2
 
 def conversor():
     #Coordenadas en test.mp4
-    ball_position = (185, 844)
-    hole_position = (1716, 876)
+    tee1 = (288, 1154)
+    tee2 = (3114, 1154)
 
     #Distancia en pixeles equivalente a 3 metros:
-    distance_pixels = math.sqrt((hole_position[0] - ball_position[0])**2 + (hole_position[1] - ball_position[1])**2)
+    distance_pixels = math.sqrt((tee2[0] - tee1[0])**2 + (tee2[1] - tee1[1])**2)
 
     distance_meters = 3
 
