@@ -13,14 +13,14 @@ df['tiempo'] = df['frame_index'] / FPS
 initial_x = df['x_centro_metros'].iloc[0]
 df['x_centro_metros'] = df['x_centro_metros'] - initial_x
 
-initial_time = df['tiempo'].iloc[0]
-df['tiempo'] = df['tiempo'] - initial_time
+df['velocidad'] = df['x_centro_metros'].diff(periods=3) / df['tiempo'].diff(periods=3)
 
-df['velocidad'] = df['x_centro_metros'].diff(periods=15) / df['tiempo'].diff(periods=15)
-
-df['aceleracion'] = df['velocidad'].diff(periods=15) / df['tiempo'].diff(periods=15)
-media_aceleracion = df['aceleracion'].mean()
-error_aceleracion = df['aceleracion'].std()
+df['aceleracion'] = df['velocidad'].diff(periods=8) / df['tiempo'].diff(periods=3)
+t_min = 1
+t_max = df['tiempo'].max()
+df_filtrado = df[(df['tiempo'] >= t_min) & (df['tiempo'] <= t_max)]
+media_aceleracion = df_filtrado['aceleracion'].mean()
+error_aceleracion = df_filtrado['aceleracion'].std()
 
 masa = 0.04593  # en kg
 error_masa = 0.00001
@@ -29,16 +29,11 @@ df['cantidad_de_movimiento'] = masa * df['velocidad']
 
 df['fuerza'] = masa * df['aceleracion']
 
-fuerza_rozamiento = df['fuerza'].mean()
+fuerza_rozamiento = masa * df_filtrado['aceleracion'].mean()
 
 error_fuerza_rozamiento = sqrt(((media_aceleracion**2)*(error_masa**2))+((masa**2)*(error_aceleracion**2)))
 
-
-print("Fuerza rozamiento: ", fuerza_rozamiento , "+-", error_fuerza_rozamiento)
-
 coeficiente_rozamiento = abs(fuerza_rozamiento/(masa * 9.81))
-print("Coeficiente rozamiento: ", coeficiente_rozamiento)
-
 
 fig, axs = plt.subplots(2, 1, figsize=(10, 8))
 

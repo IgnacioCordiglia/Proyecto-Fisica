@@ -13,37 +13,38 @@ df['tiempo'] = df['frame_index'] / FPS
 initial_x = df['x_centro_metros'].iloc[0]
 df['x_centro_metros'] = df['x_centro_metros'] - initial_x
 
-initial_time = df['tiempo'].iloc[0]
-df['tiempo'] = df['tiempo'] - initial_time
+df['velocidad'] = df['x_centro_metros'].diff(periods=4) / df['tiempo'].diff(periods=4)
 
-df['velocidad'] = df['x_centro_metros'].diff(periods=15) / df['tiempo'].diff(periods=15)
-
-velocidad_post_golpe = df['velocidad'].max()
-
-df['aceleracion'] = df['velocidad'].diff(periods=15) / df['tiempo'].diff(periods=15)
-media_aceleracion = df['aceleracion'].mean()
-error_aceleracion = df['aceleracion'].std()
+df['aceleracion'] = df['velocidad'].diff(periods=5) / df['tiempo'].diff(periods=5)
+t_min = 1
+t_max = df['tiempo'].max()
+df_filtrado = df[(df['tiempo'] >= t_min) & (df['tiempo'] <= t_max)]
+media_aceleracion = df_filtrado['aceleracion'].mean()
+error_aceleracion = df_filtrado['aceleracion'].std()
 
 masa = 0.04593  # en kg
 error_masa = 0.00001
-
+velocidad_post_golpe = df['velocidad'].max()
 cant_mov_final = velocidad_post_golpe * masa
 
 df['fuerza'] = masa * df['aceleracion']
 
-fuerza_rozamiento = df['fuerza'].mean()
+fuerza_rozamiento = masa * df_filtrado['aceleracion'].mean()
 
 error_fuerza_rozamiento = sqrt(((media_aceleracion**2)*(error_masa**2))+((masa**2)*(error_aceleracion**2)))
 
 df['trabajo'] = df['x_centro_metros'] * -fuerza_rozamiento
 
-df['energia_cinetica'] = 1/2 * masa * df['velocidad']
+df['energia_cinetica'] = 1/2 * masa * (df['velocidad']**2)
 
 coeficiente_rozamiento = abs(fuerza_rozamiento/(masa * 9.81))
 
-fig, axs = plt.subplots(2, 1, figsize=(10, 8))
+fuerza_golpe = cant_mov_final / 0.0125
 
-# Gráfico de trabajo - energia cinetica
+# Crear un diseño con dos columnas
+fig, axs = plt.subplots(1, 2, figsize=(14, 8), gridspec_kw={'width_ratios': [2, 1]})
+
+# Gráfico en la primera columna
 axs[0].plot(df['x_centro_metros'], df['trabajo'], label='Trabajo (J)', color='purple')
 axs[0].plot(df['x_centro_metros'], df['energia_cinetica'], label='Energia Cinetica (J)', color='red')
 axs[0].set_xlabel('Posicion (m)')
@@ -52,8 +53,19 @@ axs[0].set_title('Cantidad de movimiento - tiempo')
 axs[0].legend()
 axs[0].grid(True)
 
+# Texto descriptivo en la segunda columna
+texto = (
+    f"Velocidad post-golpe: {velocidad_post_golpe:.2f} m/s\n"
+    f"Aceleración media: {media_aceleracion:.2f} m/s² ± {error_aceleracion:.2f} m/s²\n"
+    f"Fuerza de rozamiento: {fuerza_rozamiento:.2f} N ± {error_fuerza_rozamiento:.2f} N\n"
+    f"Coeficiente de rozamiento: {coeficiente_rozamiento:.2f}\n"
+    f"Fuerza de golpe: {fuerza_golpe:.2f} N"
+)
+axs[1].axis('off')  # Apagar los ejes de la segunda columna
+axs[1].text(0.1, 0.5, texto, ha='left', va='center', fontsize=12)
+
 # Ajustar el espacio entre los subplots
 plt.tight_layout()
 
-# Mostrar los gráficos en una ventana
+# Mostrar los gráficos
 plt.show()

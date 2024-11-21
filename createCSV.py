@@ -2,8 +2,6 @@ import supervision as sv
 import pandas as pd
 from inference import get_model
 
-# Carga el modelo preentrenado de un repositorio externo utilizando la API key
-# El modelo "golf-j71gp/1" está diseñado específicamente para detectar pelotas de golf
 model = get_model(
     model_id='golf-j71gp/1',
     api_key='rSItXiQ0hHO8DMAOCbTe'
