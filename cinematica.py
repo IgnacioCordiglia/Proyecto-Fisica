@@ -14,9 +14,9 @@ df['tiempo'] = df['frame_index'] / FPS
 initial_x = df['x_centro_metros'].iloc[0]
 df['x_centro_metros'] = df['x_centro_metros'] - initial_x
 
-df['velocidad'] = df['x_centro_metros'].diff(periods=2) / df['tiempo'].diff(periods=2)
+df['velocidad'] = df['x_centro_metros'].diff(periods=3) / df['tiempo'].diff(periods=3)
 
-df['aceleracion'] = df['velocidad'].diff(periods=5) / df['tiempo'].diff(periods=5)
+df['aceleracion'] = df['velocidad'].diff(periods=7) / df['tiempo'].diff(periods=7)
 
 t_min = 1
 t_max = df['tiempo'].max()

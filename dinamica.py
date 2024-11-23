@@ -15,7 +15,7 @@ df['x_centro_metros'] = df['x_centro_metros'] - initial_x
 
 df['velocidad'] = df['x_centro_metros'].diff(periods=3) / df['tiempo'].diff(periods=3)
 
-df['aceleracion'] = df['velocidad'].diff(periods=8) / df['tiempo'].diff(periods=3)
+df['aceleracion'] = df['velocidad'].diff(periods=7) / df['tiempo'].diff(periods=7)
 t_min = 1
 t_max = df['tiempo'].max()
 df_filtrado = df[(df['tiempo'] >= t_min) & (df['tiempo'] <= t_max)]
@@ -35,7 +35,7 @@ error_fuerza_rozamiento = sqrt(((media_aceleracion**2)*(error_masa**2))+((masa**
 
 coeficiente_rozamiento = abs(fuerza_rozamiento/(masa * 9.81))
 
-fig, axs = plt.subplots(2, 1, figsize=(10, 8))
+fig, axs = plt.subplots(3, 1, figsize=(10, 8))
 
 
 # Gráfico de cantidad de movimiento
@@ -61,8 +61,14 @@ axs[1].axhline(y=limite_superior, color='blue', linestyle='--', label=f'Fuerza +
 axs[1].axhline(y=limite_inferior, color='green', linestyle='--', label=f'Fuerza - error: {limite_inferior:.2f} N')
 axs[1].fill_between(df['tiempo'], limite_superior, limite_inferior, color='gray', alpha=0.3, label='Error en fuerza')
 
-# Ajustar el espacio entre los subplots
+text_str = (f"Fuerza de rozamiento: {fuerza_rozamiento:.2f} N\n"
+            f"Error: {error_fuerza_rozamiento:.2f} N\n"
+            f"Coef. de rozamiento: {coeficiente_rozamiento:.2f}")
+axs[1].text(0.95, 0.95, text_str, transform=axs[1].transAxes, fontsize=10,
+            verticalalignment='top', horizontalalignment='right',
+            bbox=dict(boxstyle="round", facecolor="white", alpha=0.8))
+
+
 plt.tight_layout()
 
-# Mostrar los gráficos en una ventana
 plt.show()

@@ -35,8 +35,8 @@ velocity_fit = 2 * a_quad * t + b_quad
 acceleration_fit = np.full_like(t, 2 * a_quad)
 
 # Calcular velocidad y aceleración a través de diferencias finitas (originales)
-df['velocidad'] = df['x_centro_metros'].diff(periods=3) / df['tiempo'].diff(periods=3)
-df['aceleracion'] = df['velocidad'].diff(periods=10) / df['tiempo'].diff(periods=10)
+df['velocidad'] = df['x_centro_metros'].diff(periods=2) / df['tiempo'].diff(periods=2)
+df['aceleracion'] = df['velocidad'].diff(periods=5) / df['tiempo'].diff(periods=5)
 
 # Comparar graficando
 fig, axs = plt.subplots(2, 1, figsize=(12, 8))

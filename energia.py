@@ -13,9 +13,9 @@ df['tiempo'] = df['frame_index'] / FPS
 initial_x = df['x_centro_metros'].iloc[0]
 df['x_centro_metros'] = df['x_centro_metros'] - initial_x
 
-df['velocidad'] = df['x_centro_metros'].diff(periods=4) / df['tiempo'].diff(periods=4)
+df['velocidad'] = df['x_centro_metros'].diff(periods=3) / df['tiempo'].diff(periods=3)
 
-df['aceleracion'] = df['velocidad'].diff(periods=5) / df['tiempo'].diff(periods=5)
+df['aceleracion'] = df['velocidad'].diff(periods=7) / df['tiempo'].diff(periods=7)
 t_min = 1
 t_max = df['tiempo'].max()
 df_filtrado = df[(df['tiempo'] >= t_min) & (df['tiempo'] <= t_max)]
@@ -53,12 +53,8 @@ axs[0].set_title('Cantidad de movimiento - tiempo')
 axs[0].legend()
 axs[0].grid(True)
 
-# Texto descriptivo en la segunda columna
 texto = (
     f"Velocidad post-golpe: {velocidad_post_golpe:.2f} m/s\n"
-    f"Aceleración media: {media_aceleracion:.2f} m/s² ± {error_aceleracion:.2f} m/s²\n"
-    f"Fuerza de rozamiento: {fuerza_rozamiento:.2f} N ± {error_fuerza_rozamiento:.2f} N\n"
-    f"Coeficiente de rozamiento: {coeficiente_rozamiento:.2f}\n"
     f"Fuerza de golpe: {fuerza_golpe:.2f} N"
 )
 axs[1].axis('off')  # Apagar los ejes de la segunda columna
