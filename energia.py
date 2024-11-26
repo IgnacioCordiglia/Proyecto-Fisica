@@ -37,30 +37,40 @@ df['trabajo'] = df['x_centro_metros'] * -fuerza_rozamiento
 
 df['energia_cinetica'] = 1/2 * masa * (df['velocidad']**2)
 
+t = df['tiempo'].values
+velocity_fit = -0.7054 * t + 2.05
+energia_cinetica_fit = 1/2 * masa * (velocity_fit**2)
+velocidad_max_fit = velocity_fit.max()
+cant_mov_final_fit = velocidad_max_fit * masa
+
 coeficiente_rozamiento = abs(fuerza_rozamiento/(masa * 9.81))
 
-fuerza_golpe = cant_mov_final / 0.0125
+fuerza_golpe = cant_mov_final / 0.0125 #Tiempo de contacto con la pelota
+fuerza_golpe_fit = cant_mov_final_fit / 0.0125
 
-# Crear un diseño con dos columnas
+
 fig, axs = plt.subplots(1, 2, figsize=(14, 8), gridspec_kw={'width_ratios': [2, 1]})
 
-# Gráfico en la primera columna
+
 axs[0].plot(df['x_centro_metros'], df['trabajo'], label='Trabajo (J)', color='purple')
 axs[0].plot(df['x_centro_metros'], df['energia_cinetica'], label='Energia Cinetica (J)', color='red')
+axs[0].plot(t, energia_cinetica_fit, label='Energia cinetica (curve_fit)', color='black')
 axs[0].set_xlabel('Posicion (m)')
-axs[0].set_ylabel('Cantidad de movimiento (kg·m/s)')
-axs[0].set_title('Cantidad de movimiento - tiempo')
+axs[0].set_ylabel('Energia (J)')
+axs[0].set_title('Energia - posicion')
 axs[0].legend()
 axs[0].grid(True)
 
 texto = (
-    f"Velocidad post-golpe: {velocidad_post_golpe:.2f} m/s\n"
-    f"Fuerza de golpe: {fuerza_golpe:.2f} N"
+    f"Velocidad post-golpe: {velocidad_post_golpe:.4f} m/s\n"
+    f"Velocidad post-golpe (curve fit): {velocidad_max_fit:.4f} m/s\n"
+    f"Fuerza contacto del golpe: {fuerza_golpe:.4f} N\n"
+    f"Fuerza contacto del golpe (curve fit): {fuerza_golpe_fit:.4f} N\n"
 )
-axs[1].axis('off')  # Apagar los ejes de la segunda columna
+axs[1].axis('off') 
 axs[1].text(0.1, 0.5, texto, ha='left', va='center', fontsize=12)
 
-# Ajustar el espacio entre los subplots
+
 plt.tight_layout()
 
 # Mostrar los gráficos

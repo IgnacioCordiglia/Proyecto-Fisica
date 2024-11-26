@@ -16,7 +16,7 @@ df['x_centro_metros'] = df['x_centro_metros'] - initial_x
 
 df['velocidad'] = df['x_centro_metros'].diff(periods=3) / df['tiempo'].diff(periods=3)
 
-df['aceleracion'] = df['velocidad'].diff(periods=7) / df['tiempo'].diff(periods=7)
+df['aceleracion'] = df['velocidad'].diff(periods=20) / df['tiempo'].diff(periods=20)
 
 t_min = 1
 t_max = df['tiempo'].max()
@@ -50,7 +50,7 @@ limite_inferior = media_aceleracion - error_aceleracion
 
 
 axs[2].plot(df['tiempo'], df['aceleracion'], label='Aceleración (m/s²)', color='r')
-axs[2].axhline(y=media_aceleracion, color='purple', linestyle='--', label=f'Aceleración media: {media_aceleracion:.2f} m/s²')
+axs[2].axhline(y=media_aceleracion, color='purple', linestyle='--', label=f'Desaceleración media: {media_aceleracion:.4f} m/s²')
 axs[2].set_xlabel('Tiempo (s)')
 axs[2].set_ylabel('Aceleración (m/s²)')
 axs[2].set_title('Aceleración-tiempo')

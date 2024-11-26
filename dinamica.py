@@ -15,7 +15,7 @@ df['x_centro_metros'] = df['x_centro_metros'] - initial_x
 
 df['velocidad'] = df['x_centro_metros'].diff(periods=3) / df['tiempo'].diff(periods=3)
 
-df['aceleracion'] = df['velocidad'].diff(periods=7) / df['tiempo'].diff(periods=7)
+df['aceleracion'] = df['velocidad'].diff(periods=20) / df['tiempo'].diff(periods=20)
 t_min = 1
 t_max = df['tiempo'].max()
 df_filtrado = df[(df['tiempo'] >= t_min) & (df['tiempo'] <= t_max)]
@@ -35,7 +35,7 @@ error_fuerza_rozamiento = sqrt(((media_aceleracion**2)*(error_masa**2))+((masa**
 
 coeficiente_rozamiento = abs(fuerza_rozamiento/(masa * 9.81))
 
-fig, axs = plt.subplots(3, 1, figsize=(10, 8))
+fig, axs = plt.subplots(2, 1, figsize=(10, 8))
 
 
 # Gráfico de cantidad de movimiento
@@ -51,19 +51,19 @@ axs[0].grid(True)
 limite_superior = fuerza_rozamiento + error_fuerza_rozamiento
 limite_inferior = fuerza_rozamiento - error_fuerza_rozamiento
 
-axs[1].plot(df['tiempo'], df['fuerza'], label='Fuerza (N)', color='red')
+axs[1].plot(df['tiempo'], df['fuerza'], label='Fuerza (N)', color='orange')
 axs[1].set_xlabel('Tiempo (s)')
 axs[1].set_ylabel('Fuerza (N)')
 axs[1].set_title('Fuerza - tiempo')
 axs[1].set_xlim(left=0)
-axs[1].axhline(y=fuerza_rozamiento, color='purple', linestyle='--', label=f'Fuerza media: {fuerza_rozamiento:.2f} N')
-axs[1].axhline(y=limite_superior, color='blue', linestyle='--', label=f'Fuerza + error: {limite_superior:.2f} N')
-axs[1].axhline(y=limite_inferior, color='green', linestyle='--', label=f'Fuerza - error: {limite_inferior:.2f} N')
+axs[1].axhline(y=fuerza_rozamiento, color='purple', linestyle='--', label=f'Fuerza de rozamiento media: {fuerza_rozamiento:.4f} N')
+axs[1].axhline(y=limite_superior, color='blue', linestyle='--', label=f'Fuerza + error: {limite_superior:.4f} N')
+axs[1].axhline(y=limite_inferior, color='green', linestyle='--', label=f'Fuerza - error: {limite_inferior:.4f} N')
 axs[1].fill_between(df['tiempo'], limite_superior, limite_inferior, color='gray', alpha=0.3, label='Error en fuerza')
 
-text_str = (f"Fuerza de rozamiento: {fuerza_rozamiento:.2f} N\n"
-            f"Error: {error_fuerza_rozamiento:.2f} N\n"
-            f"Coef. de rozamiento: {coeficiente_rozamiento:.2f}")
+text_str = (f"Fuerza de rozamiento: {fuerza_rozamiento:.4f} N\n"
+            f"Error: {error_fuerza_rozamiento:.4f} N\n"
+            f"Coef. de rozamiento: {coeficiente_rozamiento:.4f}")
 axs[1].text(0.95, 0.95, text_str, transform=axs[1].transAxes, fontsize=10,
             verticalalignment='top', horizontalalignment='right',
             bbox=dict(boxstyle="round", facecolor="white", alpha=0.8))
