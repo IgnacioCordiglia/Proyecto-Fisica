@@ -18,13 +18,17 @@ df['velocidad'] = df['x_centro_metros'].diff(periods=3) / df['tiempo'].diff(peri
 
 df['aceleracion'] = df['velocidad'].diff(periods=20) / df['tiempo'].diff(periods=20)
 
+radio = 0.021 # en m
+
+df['velocidad_angular'] = df['velocidad'] / radio
+
 t_min = 1
 t_max = df['tiempo'].max()
 df_filtrado = df[(df['tiempo'] >= t_min) & (df['tiempo'] <= t_max)]
 media_aceleracion = df_filtrado['aceleracion'].mean()
 error_aceleracion = df_filtrado['aceleracion'].std()
 
-fig, axs = plt.subplots(3, 1, figsize=(10, 8))
+fig, axs = plt.subplots(4, 1, figsize=(10, 8))
 
 axs[0].plot(df['tiempo'], df['x_centro_metros'], label='Posición (m)', color='b')
 axs[0].set_xlabel('Tiempo (s)')
@@ -60,6 +64,15 @@ axs[2].fill_between(df['tiempo'], limite_superior, limite_inferior, color='gray'
 axs[2].set_xlim(left=0)
 axs[2].legend()
 axs[2].grid(True)
+
+axs[3].plot(df['tiempo'], df['velocidad_angular'], label='Velocidad angular (m/s)', color='g')
+axs[3].set_xlabel('Tiempo (s)')
+axs[3].set_ylabel('Velocidad (m/s)')
+axs[3].set_title('Velocidad-tiempo')
+axs[3].set_xlim(left=0)
+axs[3].set_ylim(bottom=-0.2)
+axs[3].legend()
+axs[3].grid(True)
 
 # Ajustar el espacio entre los subplots
 plt.tight_layout()

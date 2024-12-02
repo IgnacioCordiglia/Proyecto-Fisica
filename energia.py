@@ -27,6 +27,8 @@ error_masa = 0.00001
 velocidad_post_golpe = df['velocidad'].max()
 cant_mov_final = velocidad_post_golpe * masa
 
+df['cantidad_de_movimiento'] = masa * df['velocidad']
+
 df['fuerza'] = masa * df['aceleracion']
 
 fuerza_rozamiento = masa * df_filtrado['aceleracion'].mean()
@@ -38,12 +40,24 @@ df['trabajo'] = df['x_centro_metros'] * -fuerza_rozamiento
 df['energia_cinetica'] = 1/2 * masa * (df['velocidad']**2)
 
 t = df['tiempo'].values
-velocity_fit = -0.7054 * t + 2.05
-energia_cinetica_fit = 1/2 * masa * (velocity_fit**2)
+velocity_fit = 2.05 - 0.7054 * t
 velocidad_max_fit = velocity_fit.max()
 cant_mov_final_fit = velocidad_max_fit * masa
 
 coeficiente_rozamiento = abs(fuerza_rozamiento/(masa * 9.81))
+
+energia_cinetica_inicial = df['trabajo'].max()
+energia_cinetica_fit = energia_cinetica_inicial - df['x_centro_metros'] * -fuerza_rozamiento
+
+radio = 0.021 # en m
+
+inercia = 3/5 * masa * radio**2
+
+df['velocidad_angular'] = df['velocidad'] / radio
+
+df['energia_cinetica_rotacional'] = 1/2 * inercia * df['velocidad_angular']
+
+df['energia_cinetica_total'] = df['energia_cinetica'] + df['energia_cinetica_rotacional']
 
 fuerza_golpe = cant_mov_final / 0.0125 #Tiempo de contacto con la pelota
 fuerza_golpe_fit = cant_mov_final_fit / 0.0125
@@ -54,7 +68,9 @@ fig, axs = plt.subplots(1, 2, figsize=(14, 8), gridspec_kw={'width_ratios': [2, 
 
 axs[0].plot(df['x_centro_metros'], df['trabajo'], label='Trabajo (J)', color='purple')
 axs[0].plot(df['x_centro_metros'], df['energia_cinetica'], label='Energia Cinetica (J)', color='red')
-axs[0].plot(t, energia_cinetica_fit, label='Energia cinetica (curve_fit)', color='black')
+axs[0].plot(df['x_centro_metros'], df['energia_cinetica_rotacional'], label='Energia Cinetica rotacional (J)', color='pink')
+axs[0].plot(df['x_centro_metros'], df['energia_cinetica_total'], label='Energia Cinetica total (J)', color='brown')
+axs[0].plot(df['x_centro_metros'], energia_cinetica_fit, label='Energia cinetica (curve_fit)', color='black')
 axs[0].set_xlabel('Posicion (m)')
 axs[0].set_ylabel('Energia (J)')
 axs[0].set_title('Energia - posicion')
@@ -62,6 +78,8 @@ axs[0].legend()
 axs[0].grid(True)
 
 texto = (
+    f"Impulso: {df['cantidad_de_movimiento'].max():.4f} N·s\n"
+    f"Impulso (curve fit): {cant_mov_final_fit:.4f} N·s\n"
     f"Velocidad post-golpe: {velocidad_post_golpe:.4f} m/s\n"
     f"Velocidad post-golpe (curve fit): {velocidad_max_fit:.4f} m/s\n"
     f"Fuerza contacto del golpe: {fuerza_golpe:.4f} N\n"
